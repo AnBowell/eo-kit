@@ -9,6 +9,7 @@ __pycache__/
 *.so
 
 /test_env
+data/*
 
 # Distribution / packaging
 .Python

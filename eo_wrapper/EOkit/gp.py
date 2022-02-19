@@ -48,8 +48,12 @@ def rust_run_single_gp(
     if not result.flags["C_CONTIGUOUS"]:
         result = np.ascontiguousarray(result)
         
-    x_input_ptr = ffi.cast("double *", x_input.astype(np.float64).ctypes.data)
-    y_input_ptr = ffi.cast("double *", (y_input - np.mean(y_input)).astype(np.float64).ctypes.data)
+    x_input = x_input.astype(np.float64)
+    
+    y_input_mean_removed = (y_input - np.mean(y_input)).astype(np.float64)
+        
+    x_input_ptr = ffi.cast("double *", x_input.ctypes.data)
+    y_input_ptr = ffi.cast("double *", y_input_mean_removed.ctypes.data)
     result_ptr = ffi.cast("double *", result.ctypes.data)
     
     lib.rust_single_gp(
