@@ -1,8 +1,6 @@
 mod gaussian_processes;
 mod smoothers;
 
-use futures::executor::block_on;
-
 use gaussian_processes::gp::{multiple_gps, single_gp};
 use smoothers::whittaker::{multiple_whittakers, single_whittaker};
 
