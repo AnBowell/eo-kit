@@ -5,9 +5,6 @@ use rusty_machine::linalg::{Matrix, Vector};
 use tokio::runtime::Runtime;
 use tokio::task::JoinHandle;
 
-use std::convert::TryFrom;
-use std::convert::TryInto;
-
 pub async fn multiple_gps(
     x_input_ptr: *mut f64,
     y_input_ptr: *mut f64,
@@ -124,8 +121,6 @@ pub fn single_gp(
         std::slice::from_raw_parts_mut(output_ptr, output_size)
     };
 
-    // println!("x: {:?}", x_input);
-    // println!("y: {:?}", y_input);
     let mut x_input_vector = x_input.to_vec();
 
     let training_x = Matrix::new(input_size, 1, x_input);

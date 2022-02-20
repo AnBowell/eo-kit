@@ -9,17 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: "3.9"
-          cache: "pip"
-      - run: pip install -r requirements.txt
       - uses: messense/maturin-action@v1
         with:
           manylinux: auto
           command: build
           args: --release -o dist
-
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
