@@ -1,8 +1,10 @@
 mod gaussian_processes;
+mod smoothers;
 
 use futures::executor::block_on;
 
 use gaussian_processes::gp::{multiple_gps, single_gp};
+use smoothers::whittaker::{multiple_whittakers, single_whittaker};
 
 #[no_mangle]
 pub extern "C" fn rust_multiple_gps(
@@ -60,5 +62,48 @@ pub extern "C" fn rust_single_gp(
         length_scale,
         amplitude,
         noise,
+    );
+}
+
+#[no_mangle]
+pub extern "C" fn rust_multiple_whittakers(
+    y_input_ptr: *mut f64,
+    weights_input_ptr: *mut f64,
+    input_indices_ptr: *mut usize,
+    input_indices_size: usize,
+    output_ptr: *mut f64,
+    data_length: usize,
+    lambda: f64,
+    d: i64,
+) {
+    let future = multiple_whittakers(
+        y_input_ptr,
+        weights_input_ptr,
+        input_indices_ptr,
+        input_indices_size,
+        output_ptr,
+        data_length,
+        lambda,
+        d,
+    );
+    block_on(future);
+}
+
+#[no_mangle]
+pub extern "C" fn rust_single_whittaker(
+    y_input_ptr: *mut f64,
+    weights_input_ptr: *mut f64,
+    output_ptr: *mut f64,
+    data_length: usize,
+    lambda: f64,
+    d: i64,
+) {
+    single_whittaker(
+        y_input_ptr,
+        weights_input_ptr,
+        output_ptr,
+        data_length,
+        lambda,
+        d,
     );
 }

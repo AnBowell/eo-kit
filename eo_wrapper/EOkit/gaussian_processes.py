@@ -1,5 +1,5 @@
 import numpy as np
-from ctypes import c_double, c_int64
+from EOkit.array_utils import check_contig
 from .EOkit import lib
 from cffi import FFI
 ffi = FFI()
@@ -38,14 +38,11 @@ def rust_run_single_gp(
 
     # If data is not contiguous, using sending a pointer of the NumPy arrays
     # to the Rust library will not work! So good to check.
-    if not x_input.flags["C_CONTIGUOUS"]:
-        x_input = np.ascontiguousarray(x_input)
+    x_input = check_contig(x_input)
 
-    if not y_input.flags["C_CONTIGUOUS"]:
-        y_input = np.ascontiguousarray(y_input)
+    y_input = check_contig(y_input)
 
-    if not result.flags["C_CONTIGUOUS"]:
-        result = np.ascontiguousarray(result)
+    result = check_contig(result)
         
     x_input = x_input.astype(np.float64)
     
