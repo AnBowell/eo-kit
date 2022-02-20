@@ -63,7 +63,7 @@ def main():
 
     rust_start = perf_counter()
 
-    weights = np.full(vci.size,1.)
+    weights = np.full(vci.size,1.,dtype=np.float64)
     rust_smoothed_data = whittaker.rust_run_single_whittaker(
         vci, weights, 5, 3
     )
@@ -78,11 +78,11 @@ def main():
 
 
 
+
+    vci_inputs_whitt = [vci]*10000
+    weights_input_whitt = [weights] *10000
+
     rust_start = perf_counter()
-
-    vci_inputs_whitt = [vci]*10
-    weights_input_whitt = [weights] *10
-
 
     rust_smoothed_data = whittaker.rust_run_multiple_whittakers(vci_inputs_whitt, weights_input_whitt, 5, 3)
 

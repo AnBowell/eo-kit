@@ -2,10 +2,10 @@ use sprs::{CsMat, TriMatBase};
 use sprs::{DontCheckSymmetry, FillInReduction::ReverseCuthillMcKee};
 use sprs_ldl::Ldl;
 
-use tokio::runtime::Runtime;
+use tokio::runtime::{self};
 use tokio::task::JoinHandle;
 
-pub async fn multiple_whittakers(
+pub fn multiple_whittakers(
     y_input_ptr: *mut f64,
     weights_input_ptr: *mut f64,
     input_indices_ptr: *mut usize,
@@ -15,7 +15,10 @@ pub async fn multiple_whittakers(
     lambda: f64,
     d: i64,
 ) {
-    let rt = Runtime::new().expect("Could not make new runtime.");
+    let rt = runtime::Builder::new_multi_thread()
+        // .worker_threads(16)
+        .build()
+        .unwrap();
 
     let y_input: &mut [f64] = unsafe {
         assert!(!y_input_ptr.is_null());
@@ -91,7 +94,7 @@ pub async fn multiple_whittakers(
 
     // TODO There will probably be a more efficient way of doing this.
     for i in 0..input_indices_size {
-        let result = (&mut handles[i]).await.unwrap();
+        let result = rt.block_on(&mut handles[i]).unwrap().to_vec();
 
         let this_index = input_indices[i];
         for result_index in 0..result.len() {

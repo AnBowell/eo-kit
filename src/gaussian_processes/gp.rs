@@ -2,10 +2,10 @@ use rusty_machine::learning::gp::{ConstMean, GaussianProcess};
 use rusty_machine::learning::{toolkit::kernel, SupModel};
 use rusty_machine::linalg::{Matrix, Vector};
 
-use tokio::runtime::Runtime;
+use tokio::runtime::{self};
 use tokio::task::JoinHandle;
 
-pub async fn multiple_gps(
+pub fn multiple_gps(
     x_input_ptr: *mut f64,
     y_input_ptr: *mut f64,
     input_size: usize,
@@ -19,8 +19,10 @@ pub async fn multiple_gps(
     amplitude: f64,
     noise: f64,
 ) {
-    let rt = Runtime::new().expect("Could not make new runtime.");
-
+    let rt = runtime::Builder::new_multi_thread()
+        // .worker_threads(16)
+        .build()
+        .unwrap();
     let x_input: &mut [f64] = unsafe {
         assert!(!x_input_ptr.is_null());
         std::slice::from_raw_parts_mut(x_input_ptr, input_size)
@@ -84,7 +86,7 @@ pub async fn multiple_gps(
 
     // TODO There will probably be a more efficient way of doing this.
     for i in 0..input_indices_size {
-        let result = (&mut handles[i]).await.unwrap().into_vec();
+        let result = rt.block_on(&mut handles[i]).unwrap().into_vec();
 
         let this_index = input_indices[i] + (i * forecast_amount as usize);
 

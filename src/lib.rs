@@ -21,7 +21,7 @@ pub extern "C" fn rust_multiple_gps(
     amplitude: f64,
     noise: f64,
 ) {
-    let future = multiple_gps(
+    multiple_gps(
         x_input_ptr,
         y_input_ptr,
         input_size,
@@ -35,7 +35,6 @@ pub extern "C" fn rust_multiple_gps(
         amplitude,
         noise,
     );
-    block_on(future);
 }
 
 #[no_mangle]
@@ -76,7 +75,7 @@ pub extern "C" fn rust_multiple_whittakers(
     lambda: f64,
     d: i64,
 ) {
-    let future = multiple_whittakers(
+    multiple_whittakers(
         y_input_ptr,
         weights_input_ptr,
         input_indices_ptr,
@@ -86,7 +85,6 @@ pub extern "C" fn rust_multiple_whittakers(
         lambda,
         d,
     );
-    block_on(future);
 }
 
 #[no_mangle]

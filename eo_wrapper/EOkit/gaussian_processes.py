@@ -123,14 +123,11 @@ def run_multiple_gps(
         x_input_array.size + (forecast_amount * number_of_inputs), dtype=np.float64
     )
 
-    if not x_input_array.flags["C_CONTIGUOUS"]:
-        x_input_array = np.ascontiguousarray(x_input_array)
+    x_input_array = check_contig(x_input_array)
 
-    if not y_input_array.flags["C_CONTIGUOUS"]:
-        y_input_array = np.ascontiguousarray(y_input_array)
+    y_input_array = check_contig(y_input_array)
 
-    if not result.flags["C_CONTIGUOUS"]:
-        result = np.ascontiguousarray(result)
+    result = check_contig(result)
         
     x_input_ptr = ffi.cast("double *", x_input_array.ctypes.data)
     y_input_ptr = ffi.cast("double *", y_input_array.ctypes.data)

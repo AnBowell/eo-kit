@@ -61,9 +61,9 @@ def rust_run_multiple_whittakers(y_inputs, weights_inputs, lambda_, d):
     y_input_array = check_contig(y_input_array)
     weight_input_array = check_contig(weight_input_array)
     result = check_contig(result)
+    start_indices = check_contig(start_indices)
 
-
-    y_input_ptr = ffi.cast("double *", y_input.ctypes.data)
+    y_input_ptr = ffi.cast("double *", y_input_array.ctypes.data)
     weights_input_ptr = ffi.cast("double *", weight_input_array.ctypes.data)
     result_ptr = ffi.cast("double *", result.ctypes.data) 
     start_indices_ptr = ffi.cast("uintptr_t *", start_indices.ctypes.data)
@@ -80,6 +80,7 @@ def rust_run_multiple_whittakers(y_inputs, weights_inputs, lambda_, d):
         d,
     
     )
+
     
     results = []
     
