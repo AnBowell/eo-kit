@@ -20,9 +20,12 @@ def main():
 
 
     rust_start = perf_counter()
-
+    
+    
+    
+    
     # print(days,vci)
-    rust_smoothed_data = gaussian_processes.rust_run_single_gp(
+    rust_smoothed_data = gaussian_processes.single_gp(
         days, vci, forecast_spacing=7, forecast_amount=10, length_scale=40
     )
 
@@ -43,12 +46,12 @@ def main():
 
 
     days_list = [days]*10
-    vci_no_means = [vci_arr - np.mean(vci_arr) for vci_arr in [vci]*10]
+    vci_list_input = [vci]*10
 
 
     # print(days,vci)
-    rust_smoothed_data = gaussian_processes.run_multiple_gps(
-        days_list, vci_no_means, forecast_spacing=7, forecast_amount=10,length_scale=50,
+    rust_smoothed_data = gaussian_processes.multiple_gps(
+        days_list, vci_list_input, forecast_spacing=7, forecast_amount=10,length_scale=50,
                 amplitude=0.5,
                 noise=0.01,
     )
@@ -58,13 +61,13 @@ def main():
 
 
     
-    plots_smoothed_unsmoothed(days, vci, ten_seven_day_forecasts_x, rust_smoothed_data[0]+np.mean(vci), "Multi GP")
+    plots_smoothed_unsmoothed(days, vci, ten_seven_day_forecasts_x, rust_smoothed_data[0], "Multi GP")
 
 
     rust_start = perf_counter()
 
     weights = np.full(vci.size,1.,dtype=np.float64)
-    rust_smoothed_data = whittaker.rust_run_single_whittaker(
+    rust_smoothed_data = whittaker.single_whittaker(
         vci, weights, 5, 3
     )
 
@@ -79,12 +82,12 @@ def main():
 
 
 
-    vci_inputs_whitt = [vci]*10000
-    weights_input_whitt = [weights] *10000
+    vci_inputs_whitt = [vci]*1000
+    weights_input_whitt = [weights] *1000
 
     rust_start = perf_counter()
 
-    rust_smoothed_data = whittaker.rust_run_multiple_whittakers(vci_inputs_whitt, weights_input_whitt, 5, 3)
+    rust_smoothed_data = whittaker.multiple_whittakers(vci_inputs_whitt, weights_input_whitt, 5, 3)
 
     rust_end = perf_counter()
     print("Rust whittaker done. This took {}s".format(rust_end - rust_start))

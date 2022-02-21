@@ -12,8 +12,13 @@ jobs:
       - uses: messense/maturin-action@v1
         with:
           manylinux: auto
+          -run: pip install -r requirements.txt
           command: build
           args: --release -o dist
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+          cache: "pip"
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:

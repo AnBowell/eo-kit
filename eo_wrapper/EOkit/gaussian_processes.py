@@ -4,7 +4,7 @@ from .EOkit import lib
 from cffi import FFI
 ffi = FFI()
 
-def rust_run_single_gp(
+def single_gp(
     x_input,
     y_input,
     forecast_spacing,
@@ -68,9 +68,9 @@ def rust_run_single_gp(
     return result + np.mean(y_input)
 
 
-def run_multiple_gps(
+def multiple_gps(
     x_inputs,
-    y_inputs_mean_removed,
+    y_inputs,
     forecast_spacing,
     forecast_amount,
     length_scale=30,
@@ -91,8 +91,7 @@ def run_multiple_gps(
 
     Args:
         x_inputs ([[float]]): A list of numpy arrays containing the x-axis input.
-        y_inputs_mean_removed ([[float]]): A list of numpy arrays containing the y-axis input.
-            These arrays should all have a mean of zero! Remove the mean before calling it.
+        y_inputs ([[float]]): A list of numpy arrays containing the y-axis input.
         forecast_spacing (int): The spacing between the forecast. For weekly, 7.
         forecast_amount (int): The amount of forecasts. 10 would yield 10 forecasts of forecasting_spacing.
         length_scale (float, optional): Lengthscale of the squared-exp Kernel. Defaults to 50.
@@ -116,7 +115,10 @@ def run_multiple_gps(
 
     start_indices = np.array(start_indices, dtype=np.uint64)
 
-    y_input_array = np.concatenate(y_inputs_mean_removed).ravel().astype(np.float64)
+    (y_inputs, y_inputs_means) = zip(*[(y - mean, mean) for y in y_inputs if (mean := y.mean())])
+    
+    
+    y_input_array = np.concatenate(y_inputs).ravel().astype(np.float64)
     x_input_array = np.concatenate(x_inputs).ravel().astype(np.float64)
 
     result = np.empty(
@@ -165,6 +167,6 @@ def run_multiple_gps(
 
             single_result = result[start_indices[int(i)] : int(start_indices[i + 1])]
 
-        results.append(single_result)
+        results.append(single_result +y_inputs_means[i] )
 
     return results

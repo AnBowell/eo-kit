@@ -6,7 +6,7 @@ ffi = FFI()
 
 
 
-def rust_run_single_whittaker(y_input, weights_input, lambda_, d):
+def single_whittaker(y_input, weights_input, lambda_, d):
 
 
     data_len = len(y_input)
@@ -38,7 +38,7 @@ def rust_run_single_whittaker(y_input, weights_input, lambda_, d):
 
 
 
-def rust_run_multiple_whittakers(y_inputs, weights_inputs, lambda_, d):
+def multiple_whittakers(y_inputs, weights_inputs, lambda_, d):
     
     
     index_runner = 0
