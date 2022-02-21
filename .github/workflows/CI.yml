@@ -7,18 +7,48 @@ on:
 jobs:
   linux:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10"]
+        target: [x86_64, i686]
     steps:
       - uses: actions/checkout@v2
-      - uses: messense/maturin-action@v1
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
         with:
-          manylinux: auto
-          -run: pip install -r requirements.txt
-          command: build
-          args: --release -o dist
+          toolchain: stable
+          profile: minimal
+          default: true
+      - name: Build
+        run: cargo build --release
+      - name: Tests
+        run: cargo test --no-default-features --release
       - uses: actions/setup-python@v2
         with:
-          python-version: "3.9"
-          cache: "pip"
+          python-version: ${{ matrix.python-version }}
+      - name: Build Wheels
+        uses: messense/maturin-action@v1
+        with:
+          target: ${{ matrix.target }}
+          manylinux: auto
+          args: -i python${{ matrix.python-version }} --release --out dist --no-sdist
+      # - name: Python UnitTest
+      #   if: matrix.target == 'x86_64'
+      #   run: |
+      #     pip install cramjam --no-index --find-links dist --force-reinstall
+      #     pip install -r dev-requirements.txt
+      #     make test
+      # - name: Test no numpy installed works
+      #   if: matrix.target == 'x86_64'
+      #   run: |
+      #     pip uninstall numpy -y
+      #     python -m pytest tests/test_no_numpy.py
+      # - name: Test benchmarks
+      #   if: matrix.target == 'x86_64'
+      #   run: |
+      #     sudo apt-get install -y libsnappy-dev
+      #     pip install -r benchmark-requirements.txt
+      #     make test-bench
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
