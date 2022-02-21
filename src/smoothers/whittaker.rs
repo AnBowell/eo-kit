@@ -40,20 +40,22 @@ pub fn multiple_whittakers(
         std::slice::from_raw_parts_mut(output_ptr, data_length)
     };
 
-    let mut handles: Vec<JoinHandle<Vec<f64>>> = Vec::with_capacity(data_length);
+    let mut handles: Vec<JoinHandle<Vec<f64>>> =
+        Vec::with_capacity(data_length);
 
     for i in 0..input_indices_size {
-        let (y_input_slice, weights_input_slice) = if i + 1_usize >= input_indices_size {
-            (
-                &y_input[input_indices[i]..],
-                &weights_input[input_indices[i]..],
-            )
-        } else {
-            (
-                &y_input[input_indices[i]..input_indices[i + 1]],
-                &weights_input[input_indices[i]..input_indices[i + 1]],
-            )
-        };
+        let (y_input_slice, weights_input_slice) =
+            if i + 1_usize >= input_indices_size {
+                (
+                    &y_input[input_indices[i]..],
+                    &weights_input[input_indices[i]..],
+                )
+            } else {
+                (
+                    &y_input[input_indices[i]..input_indices[i + 1]],
+                    &weights_input[input_indices[i]..input_indices[i + 1]],
+                )
+            };
 
         handles.push(rt.spawn(async move {
             let slice_length = y_input_slice.len();
@@ -71,8 +73,8 @@ pub fn multiple_whittakers(
             )
             .to_csc();
 
-            let to_solve: CsMat<f64> =
-                &weights_matrix + &(&(&diff_mat.transpose_view() * &diff_mat) * lambda);
+            let to_solve: CsMat<f64> = &weights_matrix
+                + &(&(&diff_mat.transpose_view() * &diff_mat) * lambda);
 
             let ldl = Ldl::new()
                 .fill_in_reduction(ReverseCuthillMcKee)
@@ -139,8 +141,8 @@ pub fn single_whittaker(
     )
     .to_csc();
 
-    let to_solve: CsMat<f64> =
-        &weights_matrix + &(&(&diff_mat.transpose_view() * &diff_mat) * lambda);
+    let to_solve: CsMat<f64> = &weights_matrix
+        + &(&(&diff_mat.transpose_view() * &diff_mat) * lambda);
 
     let ldl = Ldl::new()
         .fill_in_reduction(ReverseCuthillMcKee)

@@ -47,22 +47,25 @@ pub fn multiple_gps(
 
     let zero_mean = ConstMean::default();
 
-    let mut handles: Vec<JoinHandle<Vector<f64>>> = Vec::with_capacity(input_indices_size);
+    let mut handles: Vec<JoinHandle<Vector<f64>>> =
+        Vec::with_capacity(input_indices_size);
 
     for i in 0..input_indices_size {
-        let (x_input_slice, y_input_slice) = if i + 1_usize >= input_indices_size {
-            (&x_input[input_indices[i]..], &y_input[input_indices[i]..])
-        } else {
-            (
-                &x_input[input_indices[i]..input_indices[i + 1]],
-                &y_input[input_indices[i]..input_indices[i + 1]],
-            )
-        };
+        let (x_input_slice, y_input_slice) =
+            if i + 1_usize >= input_indices_size {
+                (&x_input[input_indices[i]..], &y_input[input_indices[i]..])
+            } else {
+                (
+                    &x_input[input_indices[i]..input_indices[i + 1]],
+                    &y_input[input_indices[i]..input_indices[i + 1]],
+                )
+            };
 
         handles.push(rt.spawn(async move {
             let mut x_input_vector = x_input_slice.to_vec();
 
-            let training_x = Matrix::new(x_input_slice.len(), 1, x_input_slice);
+            let training_x =
+                Matrix::new(x_input_slice.len(), 1, x_input_slice);
 
             let training_y = Vector::new(y_input_slice);
             // Has to be created in the thread - no clone trait.
@@ -78,7 +81,8 @@ pub fn multiple_gps(
 
             x_input_vector.append(&mut forecast_days);
 
-            let smoothed_and_forecast_x = Matrix::new(x_input_vector.len(), 1, x_input_vector);
+            let smoothed_and_forecast_x =
+                Matrix::new(x_input_vector.len(), 1, x_input_vector);
 
             return gp.predict(&smoothed_and_forecast_x).unwrap();
         }));
@@ -145,7 +149,8 @@ pub fn single_gp(
 
     x_input_vector.append(&mut forecast_days);
 
-    let smoothed_and_forecast_x = Matrix::new(x_input_vector.len(), 1, x_input_vector);
+    let smoothed_and_forecast_x =
+        Matrix::new(x_input_vector.len(), 1, x_input_vector);
 
     let smoothed_data = gp.predict(&smoothed_and_forecast_x).unwrap();
 
