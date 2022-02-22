@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+"""This module houses the Whittaker smoothing algorithm wrappers.
+
+The wrappers below call the Rust written library that runs the Whittaker
+smoother.
+
+@author: Andrew Bowell
+"""
+
 import numpy as np
 from EOkit.EOkit import lib
 from EOkit.array_utils import (check_type, check_contig)
@@ -7,7 +16,28 @@ ffi = FFI()
 
 
 def single_whittaker(y_input, weights_input, lambda_, d):
+    """Run a single Whittaker smoother on 1D data.
+    
 
+    Parameters
+    ----------
+    y_input : (N) array_like
+        The inputs that are to be smoothed.
+    weights_input :(N) array_like
+        The weight that should be given to each input. 0. to ignore points and
+        interpolate.
+    lambda_ : float
+        Smoothing coefficient. Larger = more smooth.
+    d : float
+        Order of the smoothing/interpolation. 1 = linear and so on.
+
+    Returns
+    -------
+    (N) array_like
+        Smoothed data at y inputs.
+    """
+
+ 
 
     data_len = len(y_input)
     
@@ -37,8 +67,26 @@ def single_whittaker(y_input, weights_input, lambda_, d):
     return result
 
 
-
+# TODO! Finish docs here.
 def multiple_whittakers(y_inputs, weights_inputs, lambda_, d):
+    """Run many Whittaker smoothers on 1D data in a multithreaded manner.
+
+    Parameters
+    ----------
+    y_inputs : _type_
+        _description_
+    weights_inputs : _type_
+        _description_
+    lambda_ : _type_
+        _description_
+    d : _type_
+        _description_
+
+    Returns
+    -------
+    _type_
+        _description_
+    """
     
     
     index_runner = 0
