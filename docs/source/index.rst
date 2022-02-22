@@ -12,6 +12,8 @@ Welcome to EOkit's documentation!
 
    introduction
 
+   smoothers
+
 
 Indices and tables
 ==================
