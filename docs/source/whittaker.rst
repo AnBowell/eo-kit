@@ -5,6 +5,6 @@ Whittaker Smoother
    :maxdepth: 2
    :caption: Contents:
 
-.. automodule:: EOkit.Smoothers.whittaker
+.. automodule:: EOkit.smoothers.whittaker
     :members:
 	
