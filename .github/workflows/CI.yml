@@ -32,6 +32,7 @@ jobs:
         with:
           target: ${{ matrix.target }}
           manylinux: auto
+          container: off
           args: -i python${{ matrix.python-version }} --release --out dist --no-sdist
       # - name: Python UnitTest
       #   if: matrix.target == 'x86_64'

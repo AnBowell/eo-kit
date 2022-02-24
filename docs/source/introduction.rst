@@ -7,4 +7,5 @@ Introduction to EOkit
 
    
 
-A lot of Earth Observation (EO) is performed in Python. For me, this is a little slow.
+A lot of Earth Observation (EO) is performed in Python. This can be rather slow
+though! Minimal docs for now. Updates will be coming.

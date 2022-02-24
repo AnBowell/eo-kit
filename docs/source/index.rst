@@ -14,6 +14,8 @@ Welcome to EOkit's documentation!
 
    smoothers
 
+   gaussian_processes
+
 
 Indices and tables
 ==================

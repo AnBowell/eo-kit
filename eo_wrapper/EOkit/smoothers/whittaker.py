@@ -6,7 +6,6 @@ smoother. There are multithreaded functions denoted by the prefix "multiple".
 More will be added here in future, but for now this is sufficient for most EO 
 applications.
 
-@author: Andrew Bowell
 """
 
 import numpy as np
