@@ -165,10 +165,18 @@ def multiple_gps(
 
     start_indices = np.array(start_indices, dtype=np.uint64)
 
-    (y_inputs, y_inputs_means) = zip(*[(y - mean, mean) for y
-                                       in y_inputs if (mean := y.mean())])
 
-    y_input_array = np.concatenate(y_inputs).ravel().astype(np.float64)
+    # (y_inputs, y_inputs_means) = zip(*[(y - mean, mean) for y
+    #                                    in y_inputs if (mean := y.mean())])
+    y_inputs_list, y_inputs_means = [],[]
+    for y in y_inputs:
+        mean = y.mean()
+        y_inputs_list.append(y-mean)
+        y_inputs_means.append(mean)
+
+
+
+    y_input_array = np.concatenate(y_inputs_list).ravel().astype(np.float64)
     x_input_array = np.concatenate(x_inputs).ravel().astype(np.float64)
 
     result = np.empty(
