@@ -38,8 +38,8 @@ def main():
 
     rust_start = perf_counter()
 
-    days_list = [days] * 10
-    vci_list_input = [vci] * 10
+    days_list = [days] * 300
+    vci_list_input = [vci] * 300
 
     # print(days,vci)
     rust_smoothed_data = gaussian_processes.multiple_gps(
@@ -50,6 +50,7 @@ def main():
         length_scale=50,
         amplitude=0.5,
         noise=0.01,
+        n_threads=-1,
     )
 
     rust_end = perf_counter()
@@ -75,7 +76,7 @@ def main():
     rust_start = perf_counter()
 
     rust_smoothed_data = whittaker.multiple_whittakers(
-        vci_inputs_whitt, weights_input_whitt, 5, 3
+        vci_inputs_whitt, weights_input_whitt, 5, 3, n_threads=-1
     )
 
     rust_end = perf_counter()

@@ -18,11 +18,25 @@ pub fn multiple_gps(
     length_scale: f64,
     amplitude: f64,
     noise: f64,
+    n_threads: i64,
 ) {
-    let rt = runtime::Builder::new_multi_thread()
-        // .worker_threads(16)
-        .build()
-        .unwrap();
+    let rt = if n_threads < 0 {
+        runtime::Builder::new_multi_thread()
+            .build()
+            .expect("Could not build Tokio runtime.")
+    } else {
+        runtime::Builder::new_multi_thread()
+            .worker_threads(n_threads as usize)
+            .build()
+            .expect(
+                format!(
+                    "Could not build Tokio runtime with {} threads",
+                    n_threads
+                )
+                .as_str(),
+            )
+    };
+
     let x_input: &mut [f64] = unsafe {
         assert!(!x_input_ptr.is_null());
         std::slice::from_raw_parts_mut(x_input_ptr, input_size)

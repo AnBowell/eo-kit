@@ -18,6 +18,7 @@ pub extern "C" fn rust_multiple_gps(
     length_scale: f64,
     amplitude: f64,
     noise: f64,
+    n_threads: i64,
 ) {
     multiple_gps(
         x_input_ptr,
@@ -32,6 +33,7 @@ pub extern "C" fn rust_multiple_gps(
         length_scale,
         amplitude,
         noise,
+        n_threads,
     );
 }
 
@@ -72,6 +74,7 @@ pub extern "C" fn rust_multiple_whittakers(
     data_length: usize,
     lambda: f64,
     d: i64,
+    njobs: i64,
 ) {
     multiple_whittakers(
         y_input_ptr,
@@ -82,6 +85,7 @@ pub extern "C" fn rust_multiple_whittakers(
         data_length,
         lambda,
         d,
+        njobs,
     );
 }
 

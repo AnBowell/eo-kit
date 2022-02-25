@@ -26,18 +26,18 @@ def single_gp(
     noise=0.01,
 ):
     """Run a single RBF kernel GP on 1D data.
-    
+
     This is a wrapper function that lets you specify RBF kernel parameters to
-    run a GP smoother. The code also allows for forecasting, simply set the 
-    forecasting spacing as desired. For example, if x_input is in days and 
-    a weekly forecast is needed, forecast_spacing would be 7. Then set the 
-    forecasting amount - this is how many forecasting of forecast_spacing 
+    run a GP smoother. The code also allows for forecasting, simply set the
+    forecasting spacing as desired. For example, if x_input is in days and
+    a weekly forecast is needed, forecast_spacing would be 7. Then set the
+    forecasting amount - this is how many forecasting of forecast_spacing
     are needed.
-    
+
     Notes
-    ----- 
+    -----
     NO NANS/INFS SHOULD ENTER THIS FUNCTION.
-    
+
     Parameters
     ----------
     x_input : (N) array_like of float
@@ -46,7 +46,7 @@ def single_gp(
     y_input : (N) array_like of float
         The y_inputs (the variable to be forecast/smoothed). Remove NaNs first.
     forecast_spacing : float
-        The spacing of the forecast. E.g. the temporal resolution of the 
+        The spacing of the forecast. E.g. the temporal resolution of the
         forecast.
     forecast_amount : float
         The amount of forecasts of resultion forecast_spacing. Set to 0 for no
@@ -63,7 +63,7 @@ def single_gp(
     (N) array_like of float
         A numpy array containing the smoothed/forecasted values. In the future
         this may also include the X variable for ease.
-        
+
     """
     result = np.empty(x_input.size + forecast_amount, dtype=np.float64)
 
@@ -107,33 +107,34 @@ def multiple_gps(
     length_scale=30,
     amplitude=0.5,
     noise=0.1,
+    n_threads=-1,
 ):
     """Run multiple RBF kernel GPs on 1D data.
-    
+
     This is a wrapper function that lets you specify RBF kernel parameters to
-    run GP smoothers. The code also allows for forecasting, simply set the 
-    forecasting spacing as desired. For example, if x_input is in days and 
-    a weekly forecast is needed, forecast_spacing would be 7. Then set the 
-    forecasting amount - this is how many forecasting of forecast_spacing 
+    run GP smoothers. The code also allows for forecasting, simply set the
+    forecasting spacing as desired. For example, if x_input is in days and
+    a weekly forecast is needed, forecast_spacing would be 7. Then set the
+    forecasting amount - this is how many forecasting of forecast_spacing
     are needed.
-    
-    A list of NumPy arrays should be used as inputs. A list was used here so 
+
+    A list of NumPy arrays should be used as inputs. A list was used here so
     that the inputs can be of different lengths, which makes it easier when
     removing cloud cover or other types of null value.
-    
+
     Notes
-    ----- 
+    -----
     NO NANS/INFS SHOULD ENTER THIS FUNCTION.
-    
+
     Parameters
     ----------
     x_inputs : [(N)] list of array_like of float
         A list of NumPy arrays containing the x_input variable.
     y_inputs : [(N)] list of array_like of float
-        A list of NumPy arrays containing the y input (the variable to be 
+        A list of NumPy arrays containing the y input (the variable to be
         forecast/smoothed). Remove NaNs first.
     forecast_spacing : float
-        The spacing of the forecast. E.g. the temporal resolution of the 
+        The spacing of the forecast. E.g. the temporal resolution of the
         forecast.
     forecast_amount : float
         The amount of forecasts of resultion forecast_spacing. Set to 0 for no
@@ -144,13 +145,19 @@ def multiple_gps(
         The amplitude of the RBF kernel, by default 0.5
     noise : float, optional
         Noise of the GP regresion, by default 0.01
+    n_threads : int, optional
+        Amount of worker threads spawned to complete the task. The default is -1
+        which uses all logical processor cores. To tone this down, use something
+        between 1 and the number of processor cores you have. Setting this value
+        to a number larger than the amount of logical cores you have will most
+        likely degreade performance.
 
     Returns
     -------
     [(N)] list of array_like of float
         A llist of numpy arrays containing the smoothed/forecasted values.
         In the future this may also include the X variable for ease.
-        
+
     """
     number_of_inputs = len(x_inputs)
 
@@ -165,22 +172,20 @@ def multiple_gps(
 
     start_indices = np.array(start_indices, dtype=np.uint64)
 
-
     # (y_inputs, y_inputs_means) = zip(*[(y - mean, mean) for y
     #                                    in y_inputs if (mean := y.mean())])
-    y_inputs_list, y_inputs_means = [],[]
+    y_inputs_list, y_inputs_means = [], []
     for y in y_inputs:
         mean = y.mean()
-        y_inputs_list.append(y-mean)
+        y_inputs_list.append(y - mean)
         y_inputs_means.append(mean)
-
-
 
     y_input_array = np.concatenate(y_inputs_list).ravel().astype(np.float64)
     x_input_array = np.concatenate(x_inputs).ravel().astype(np.float64)
 
     result = np.empty(
-        x_input_array.size + (forecast_amount * number_of_inputs), dtype=np.float64
+        x_input_array.size + (forecast_amount * number_of_inputs),
+        dtype=np.float64,
     )
 
     x_input_array = check_contig(x_input_array)
@@ -207,6 +212,7 @@ def multiple_gps(
         length_scale,
         amplitude,
         noise,
+        n_threads,
     )
 
     results = []

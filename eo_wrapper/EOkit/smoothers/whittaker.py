@@ -70,7 +70,7 @@ def single_whittaker(y_input, weights_input, lambda_, d):
     return result
 
 
-def multiple_whittakers(y_inputs, weights_inputs, lambda_, d):
+def multiple_whittakers(y_inputs, weights_inputs, lambda_, d, n_threads=-1):
     """Run many Whittaker smoothers on 1D data in a multithreaded manner.
 
     This runs an identical algorithm to the single_whittaker function. However,
@@ -93,6 +93,14 @@ def multiple_whittakers(y_inputs, weights_inputs, lambda_, d):
         Smoothing coefficient. Larger = smoother.
     d : float
         Order of smoothing. 1. for linear.
+    n_threads : int, optional
+        Amount of worker threads spawned to complete the task. The default is -1
+        which uses all logical processor cores. To tone this down, use something
+        between 1 and the number of processor cores you have. Setting this value
+        to a number larger than the amount of logical cores you have will most
+        likely degreade performance.
+
+
 
     Returns
     -------
@@ -135,6 +143,7 @@ def multiple_whittakers(y_inputs, weights_inputs, lambda_, d):
         result.size,
         lambda_,
         d,
+        n_threads,
     )
 
     results = []
