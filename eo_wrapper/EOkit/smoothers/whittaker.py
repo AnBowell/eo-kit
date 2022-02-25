@@ -19,17 +19,15 @@ ffi = FFI()
 def single_whittaker(y_input, weights_input, lambda_, d):
     """Run a single Whittaker smoother on 1D data.
 
-    The Whittaker smoother is based on penalized least squares and the original
-    paper can be found here: https://pubs.acs.org/doi/10.1021/ac034173t. Sorry
-    about the pay wall - though the supporting information is available and
-    contains extra details about the implementation of this algorithm.
-
+    The Whittaker smoother is based on penalized least squares. The main paper
+    is behind a pay-wall, though the supporting information is available and
+    contains extra details about the implementation of this algorithm [1].
 
     Parameters
     ----------
-    y_input : (N) array_like of float
+    y_input : ndarray of type float, size (N)
         The inputs that are to be smoothed.
-    weights_input :(N) array_like, of floats.
+    weights_input : ndarray of type float, size (N)
         The weight that should be given to each input, where 0. ignores a given
         point (useful for interpolation) and 1. applies the full weight.
     lambda_ : float
@@ -39,10 +37,26 @@ def single_whittaker(y_input, weights_input, lambda_, d):
 
     Returns
     -------
-    (N) array_like of float
+    ndarray of type float, size (N)
         Smoothed data at y inputs.
-    """
 
+    Examples
+    --------
+    Below is a simple example of how to use the Whittaker smoother.
+
+    >>> data_len = 1000
+    >>> vci = (np.sin(np.arange(0, data_len, 1., dtype=float))
+    >>>           + np.random.standard_normal(data_len) * 2))
+    >>> weights = np.full(vci.size, 1.0, dtype=np.float64)
+    >>> rust_smoothed_data = whittaker.single_whittaker(vci, weights, 5, 3)
+
+    References
+    ----------
+    .. [1] Eilers, Paul H. C. "A Perfect Smoother", Analytical Chemistry,
+           2003, 75 (14), 3631-3636, 10.1021/ac034173t,
+           https://pubs.acs.org/doi/pdf/10.1021/ac034173t
+
+    """
     data_len = len(y_input)
 
     result = np.empty(data_len, dtype=np.float64)
@@ -83,9 +97,9 @@ def multiple_whittakers(y_inputs, weights_inputs, lambda_, d, n_threads=-1):
 
     Parameters
     ----------
-    y_inputs : [(N)] list of array_like of float
+    y_inputs : list of ndarrays of type float, size (N)
         A list of numpy arrays containing the values to be smoothed.
-    weights_inputs : [(N)] list of array_like of float
+    weights_inputs : list of ndarrays of type float, size (N)
         A list of numpy arrays containing the weights for the values to be
         smoothed. 0. ignores a given point (for interpolation) whereas 1.
         takes the point into full consideration.
@@ -100,11 +114,9 @@ def multiple_whittakers(y_inputs, weights_inputs, lambda_, d, n_threads=-1):
         to a number larger than the amount of logical cores you have will most
         likely degreade performance.
 
-
-
     Returns
     -------
-    list of array_like of float
+    list of ndarrays of type float, size (N)
         A list of numpy arrays containing the smoothed data at y_inputs.
     """
 

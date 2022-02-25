@@ -40,10 +40,10 @@ def single_gp(
 
     Parameters
     ----------
-    x_input : (N) array_like of float
+    x_input : ndarray of type float, size (N)
         The x_inputs, in most cases this will be time of some format. It's best
         to subtract the start value from this array to have it start from 0.
-    y_input : (N) array_like of float
+    y_input : ndarray of type float, size (N)
         The y_inputs (the variable to be forecast/smoothed). Remove NaNs first.
     forecast_spacing : float
         The spacing of the forecast. E.g. the temporal resolution of the
@@ -60,9 +60,18 @@ def single_gp(
 
     Returns
     -------
-    (N) array_like of float
+    ndarray of type float, size (N)
         A numpy array containing the smoothed/forecasted values. In the future
         this may also include the X variable for ease.
+
+    Examples
+    --------
+    Below is a simple example of how to use Gaussian Processes.
+
+    >>> data_len = 1000
+    >>> days = np.arange(0, data_len, 1., dtype=float)
+    >>> vci = np.sin(days) + np.random.standard_normal(data_len) * 2))
+    >>> rust_smoothed_data = gaussian_processes.single_gp(days, vci, 0, 0)
 
     """
     result = np.empty(x_input.size + forecast_amount, dtype=np.float64)
@@ -128,9 +137,9 @@ def multiple_gps(
 
     Parameters
     ----------
-    x_inputs : [(N)] list of array_like of float
+    x_inputs : list of ndarrays of type float, size (N)
         A list of NumPy arrays containing the x_input variable.
-    y_inputs : [(N)] list of array_like of float
+    y_inputs : list of ndarrays of type float, size (N)
         A list of NumPy arrays containing the y input (the variable to be
         forecast/smoothed). Remove NaNs first.
     forecast_spacing : float
@@ -154,8 +163,8 @@ def multiple_gps(
 
     Returns
     -------
-    [(N)] list of array_like of float
-        A llist of numpy arrays containing the smoothed/forecasted values.
+    list of ndarrays of type float, size (N)
+        A list of numpy arrays containing the smoothed/forecasted values.
         In the future this may also include the X variable for ease.
 
     """
