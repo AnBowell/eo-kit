@@ -181,9 +181,8 @@ def multiple_gps(
 
     start_indices = np.array(start_indices, dtype=np.uint64)
 
-    # (y_inputs, y_inputs_means) = zip(*[(y - mean, mean) for y
-    #                                    in y_inputs if (mean := y.mean())])
     y_inputs_list, y_inputs_means = [], []
+
     for y in y_inputs:
         mean = y.mean()
         y_inputs_list.append(y - mean)
