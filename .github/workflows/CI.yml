@@ -18,6 +18,7 @@ jobs:
           source $HOME/.cargo/env
           for PYBIN in /opt/python/cp3[6789]*/bin; do
             "${PYBIN}/pip" install maturin
+            "${PYBIN}/pip" install cffi
             "${PYBIN}/maturin" build -i "${PYBIN}/python" --release --manylinux 2014
           done
       - name: Upload wheels
