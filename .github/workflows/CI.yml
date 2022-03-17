@@ -25,7 +25,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: wheels
-          path: $HOME/eo-kit/eo-kit/target/wheels/
+          path: /__w/eo-kit/eo-kit/target/wheels/
 
       # Auditwheel isn't generally necessary. This is only shown as refernce for cases where you link
       # external libraries, in which case you have to set manylinux to off and then use auditwheel repair
