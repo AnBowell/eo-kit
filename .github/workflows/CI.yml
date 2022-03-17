@@ -6,7 +6,7 @@ on:
 
 jobs:
   linux:
-    name: Build for CentOS
+    name: Build for Linux
     runs-on: ubuntu-latest
     container: quay.io/pypa/manylinux2014_x86_64
     steps:
@@ -19,13 +19,13 @@ jobs:
           for PYBIN in /opt/python/cp3[6789]*/bin; do
             "${PYBIN}/pip" install maturin
             "${PYBIN}/pip" install cffi
-            "${PYBIN}/maturin" build -i "${PYBIN}/python" --release --manylinux 2014
+            "${PYBIN}/maturin" build -i "${PYBIN}/python" --release --manylinux 2014 -o output_wheels/
           done
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
           name: wheels
-          path: dist
+          path: output_wheels/
 
       # Auditwheel isn't generally necessary. This is only shown as refernce for cases where you link
       # external libraries, in which case you have to set manylinux to off and then use auditwheel repair
