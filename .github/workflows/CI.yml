@@ -6,57 +6,69 @@ on:
 
 jobs:
   linux:
+    name: Build for CentOS
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
-        target: [x86_64]
-        # TODO Fails to compile to i686! Should fix this at somepoint.
+    container: quay.io/pypa/manylinux2014_x86_64
     steps:
-      - uses: actions/checkout@v2
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          default: true
+      - uses: actions/checkout@v1
+      - name: Install rust
+        run: curl https://sh.rustup.rs -sSf | sh -s -- -y
       - name: Build
-        run: cargo build --release
-      - name: Tests
-        run: cargo test --no-default-features --release
-      - uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-      - run: pip install -r requirements.txt
-      - name: Build Wheels
-        uses: messense/maturin-action@v1
-        with:
-          target: ${{ matrix.target }}
-          manylinux: 2014
-          container: off
-          args: -i python${{ matrix.python-version }} --release --out dist --no-sdist
-      # - name: Python UnitTest
-      #   if: matrix.target == 'x86_64'
-      #   run: |
-      #     pip install cramjam --no-index --find-links dist --force-reinstall
-      #     pip install -r dev-requirements.txt
-      #     make test
-      # - name: Test no numpy installed works
-      #   if: matrix.target == 'x86_64'
-      #   run: |
-      #     pip uninstall numpy -y
-      #     python -m pytest tests/test_no_numpy.py
-      # - name: Test benchmarks
-      #   if: matrix.target == 'x86_64'
-      #   run: |
-      #     sudo apt-get install -y libsnappy-dev
-      #     pip install -r benchmark-requirements.txt
-      #     make test-bench
+        run: |
+          source $HOME/.cargo/env
+          for PYBIN in /opt/python/cp3[6789]*/bin; do
+            "${PYBIN}/pip" install maturin
+            "${PYBIN}/maturin" build -i "${PYBIN}/python" --release --manylinux 2014
+          done
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
           name: wheels
           path: dist
+
+      # Auditwheel isn't generally necessary. This is only shown as refernce for cases where you link
+      # external libraries, in which case you have to set manylinux to off and then use auditwheel repair
+      # - name: Auditwheel repair
+      #   run: |
+      #     for wheel in nightly-only/target/wheels/*.whl; do
+      #         auditwheel repair "${wheel}"
+      #     done
+
+  # linux:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+  #       target: [x86_64]
+  #       # TODO Fails to compile to i686! Should fix this at somepoint.
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Install Rust toolchain
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         toolchain: stable
+  #         profile: minimal
+  #         default: true
+  #     - name: Build
+  #       run: cargo build --release
+  #     - name: Tests
+  #       run: cargo test --no-default-features --release
+  #     - uses: actions/setup-python@v2
+  #       with:
+  #         python-version: ${{ matrix.python-version }}
+  #     - run: pip install -r requirements.txt
+  #     - name: Build Wheels
+  #       uses: messense/maturin-action@v1
+  #       with:
+  #         target: ${{ matrix.target }}
+  #         manylinux: auto
+  #         container: off
+  #         args: -i python${{ matrix.python-version }} --release --out dist --no-sdist
+  #     - name: Upload wheels
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: wheels
+  #         path: dist
 
   windows:
     runs-on: windows-latest
