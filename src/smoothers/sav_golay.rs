@@ -1,8 +1,6 @@
 use nalgebra::DMatrix;
 
-fn factorial(num: i64) -> i64 {
-    (1..=num).product()
-}
+use crate::math_utils::convolve::{convolve_1d, ConvType};
 
 pub fn single_sav_golay(
     y_input_ptr: *mut f64,
@@ -39,9 +37,29 @@ pub fn single_sav_golay(
         * (delta.powf(deriv as f64))
         * factorial(deriv) as f64;
 
-    // let first_vals = y_input[0] - (y_input[1..half_window + 1] - y_input[0]);
-    // let last_vals = y_input[data_length - 1]
-    //     - (y_input[-half_window - 1..-1] - y_input[-1]);
+    let mut first_vals: Vec<f64> = y_input
+        [(1 as usize)..((half_window + 1) as usize)]
+        .iter()
+        .rev()
+        .map(|x| y_input[0] - (x - y_input[0]).abs())
+        .collect();
 
-    println!("Array: b {}", row);
+    let last_vals = y_input
+        [(data_length - half_window as usize - 1)..(data_length - 1)]
+        .iter()
+        .rev()
+        .map(|x| {
+            y_input[data_length - 1] - (x - y_input[data_length - 1]).abs()
+        });
+
+    first_vals.extend(y_input.iter());
+    first_vals.extend(last_vals);
+
+    let result = convolve_1d(&first_vals, &y_input.to_vec(), ConvType::Valid);
+
+    println!("Result {:?}", result);
+}
+
+fn factorial(num: i64) -> i64 {
+    (1..=num).product()
 }

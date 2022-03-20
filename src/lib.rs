@@ -1,4 +1,5 @@
 mod gaussian_processes;
+pub mod math_utils;
 mod ndvi;
 pub mod smoothers;
 
