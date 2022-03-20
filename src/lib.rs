@@ -1,6 +1,6 @@
 mod gaussian_processes;
 mod ndvi;
-mod smoothers;
+pub mod smoothers;
 
 use gaussian_processes::gp::{multiple_gps, single_gp};
 use smoothers::whittaker::{multiple_whittakers, single_whittaker};

@@ -6,7 +6,7 @@ edition = "2018"
 
 [lib]
 name = "EOkit"
-crate-type = ["cdylib"]
+crate-type = ["cdylib","lib"]
 
 [dependencies]
 tokio={version="1.17.0",features=["full"]}
