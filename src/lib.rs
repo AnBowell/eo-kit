@@ -1,4 +1,5 @@
 mod gaussian_processes;
+mod ndvi;
 mod smoothers;
 
 use gaussian_processes::gp::{multiple_gps, single_gp};
