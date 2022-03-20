@@ -7,6 +7,7 @@ pub fn convolve_1d(a: &Vec<f64>, v: &Vec<f64>, conv: ConvType) -> Vec<f64> {
     let na = a.len();
     let nv = v.len();
 
+    // TODO Separate out into separate functions.
     match conv {
         ConvType::Full => {
             let n = na + nv - 1;

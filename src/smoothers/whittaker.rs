@@ -137,7 +137,7 @@ pub fn single_whittaker(
     };
 
     let output: &mut [f64] = unsafe {
-        assert!(!y_input_ptr.is_null());
+        assert!(!output_ptr.is_null());
         std::slice::from_raw_parts_mut(output_ptr, data_length)
     };
 
