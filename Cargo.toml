@@ -14,7 +14,9 @@ rusty-machine ="0.5.4"
 futures = "0.3.21"
 sprs="0.10.0"
 sprs-ldl = "0.9.0"
-ndarray= "0.15.4"
+nalgebra= "0.30.1"
+# ndarray= "0.15.4"
+# ndarray-linalg ="0.14.1"
 
 [package.metadata.maturin]
 python-source = "eo_wrapper"
