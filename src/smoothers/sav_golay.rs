@@ -21,7 +21,6 @@ pub fn single_sav_golay(
     };
 
     let half_window = ((window_size as f64 - 1_f64) / 2_f64).floor() as i64;
-    println!("{}", half_window);
 
     let mut b_vec =
         Vec::with_capacity((((half_window * 2) + 1) * (order + 1)) as usize);
@@ -61,8 +60,6 @@ pub fn single_sav_golay(
         .map(|x| {
             y_input[data_length - 1] + (x - y_input[data_length - 1]).abs()
         });
-
-    // println!("Last vals: {:?}", last_vals);
 
     first_vals.extend(y_input.iter());
     first_vals.extend(last_vals);

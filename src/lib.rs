@@ -4,7 +4,10 @@ mod ndvi;
 pub mod smoothers;
 
 use gaussian_processes::gp::{multiple_gps, single_gp};
-use smoothers::whittaker::{multiple_whittakers, single_whittaker};
+use smoothers::{
+    sav_golay::single_sav_golay,
+    whittaker::{multiple_whittakers, single_whittaker},
+};
 
 #[no_mangle]
 pub extern "C" fn rust_multiple_gps(
@@ -108,4 +111,25 @@ pub extern "C" fn rust_single_whittaker(
         lambda,
         d,
     );
+}
+
+#[no_mangle]
+pub extern "C" fn rust_single_sav_golay(
+    y_input_ptr: *mut f64,
+    output_ptr: *mut f64,
+    data_length: usize,
+    window_size: i64,
+    order: i64,
+    deriv: i64,
+    delta: f64,
+) {
+    single_sav_golay(
+        y_input_ptr,
+        output_ptr,
+        data_length,
+        window_size,
+        order,
+        deriv,
+        delta,
+    )
 }
