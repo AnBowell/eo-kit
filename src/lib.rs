@@ -5,7 +5,7 @@ pub mod smoothers;
 
 use gaussian_processes::gp::{multiple_gps, single_gp};
 use smoothers::{
-    sav_golay::single_sav_golay,
+    sav_golay::{multiple_sav_golays, single_sav_golay},
     whittaker::{multiple_whittakers, single_whittaker},
 };
 
@@ -131,5 +131,32 @@ pub extern "C" fn rust_single_sav_golay(
         order,
         deriv,
         delta,
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn rust_multiple_sav_golays(
+    y_input_ptr: *mut f64,
+    input_indices_ptr: *mut usize,
+    input_indices_size: usize,
+    output_ptr: *mut f64,
+    data_length: usize,
+    window_size: i64,
+    order: i64,
+    deriv: i64,
+    delta: f64,
+    n_threads: i64,
+) {
+    multiple_sav_golays(
+        y_input_ptr,
+        input_indices_ptr,
+        input_indices_size,
+        output_ptr,
+        data_length,
+        window_size,
+        order,
+        deriv,
+        delta,
+        n_threads,
     )
 }

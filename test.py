@@ -38,8 +38,9 @@ def main():
 
     rust_start = perf_counter()
 
-    days_list = [days] * 300
-    vci_list_input = [vci] * 300
+    days_list = [days] * 3
+
+    vci_list_input = [vci] * 3
 
     # print(days,vci)
     rust_smoothed_data = gaussian_processes.multiple_gps(
@@ -92,6 +93,19 @@ def main():
     print("Rust sav_golay done. This took {}s".format(rust_end - rust_start))
 
     plots_smoothed_unsmoothed(days, vci, days, rust_smoothed_data, "Single sav_golay")
+
+    rust_start = perf_counter()
+    vci_inputs_sav_golay = [vci] * 1000
+
+    rust_smoothed_data = sav_golay.multiple_sav_golays(
+        vci_inputs_sav_golay, 7, 1, deriv=0, delta=1
+    )
+
+    rust_end = perf_counter()
+    print(
+        "Rust sav_golay multithreaded done. This took {}s".format(rust_end - rust_start)
+    )
+    plots_smoothed_unsmoothed(days, vci, days, rust_smoothed_data[0], "Multi sav_golay")
 
     plt.show()
 
