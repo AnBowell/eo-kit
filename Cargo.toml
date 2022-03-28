@@ -1,6 +1,6 @@
 [package]
 name = "eo-kit"
-version = "0.1.1"
+version = "0.1.3"
 edition = "2018"
 
 
@@ -9,7 +9,7 @@ name = "EOkit"
 crate-type = ["cdylib","lib"]
 
 [dependencies]
-tokio={version="1.17.0",features=["full"]}
+tokio={version="1.17.0", features=["rt-multi-thread"]}
 rusty-machine ="0.5.4"
 futures = "0.3.21"
 sprs="0.10.0"

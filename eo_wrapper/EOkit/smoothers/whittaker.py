@@ -15,7 +15,7 @@ from cffi import FFI
 
 ffi = FFI()
 
-# Todo put references in Doc style.
+
 def single_whittaker(y_input, weights_input, lambda_, d):
     """Run a single Whittaker smoother on 1D data.
 
