@@ -1,7 +1,7 @@
 from re import M
 import EOkit
 from EOkit import gaussian_processes
-from EOkit.smoothers import whittaker
+from EOkit.smoothers import whittaker, sav_golay
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -83,6 +83,15 @@ def main():
     print("Rust whittaker done. This took {}s".format(rust_end - rust_start))
 
     plots_smoothed_unsmoothed(days, vci, days, rust_smoothed_data[0], "Multi Whittaker")
+
+    rust_start = perf_counter()
+
+    rust_smoothed_data = sav_golay.single_sav_golay(vci, 7, 1, deriv=0, delta=1)
+
+    rust_end = perf_counter()
+    print("Rust sav_golay done. This took {}s".format(rust_end - rust_start))
+
+    plots_smoothed_unsmoothed(days, vci, days, rust_smoothed_data, "Single sav_golay")
 
     plt.show()
 
