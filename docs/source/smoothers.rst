@@ -7,5 +7,7 @@ Smoothers
 
    whittaker
 
+   sav_golay
+
 
 Module for smoothers.
