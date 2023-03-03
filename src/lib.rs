@@ -96,6 +96,7 @@ pub extern "C" fn rust_multiple_whittakers(
 
 #[no_mangle]
 pub extern "C" fn rust_single_whittaker(
+    x_input_ptr: *mut f64,
     y_input_ptr: *mut f64,
     weights_input_ptr: *mut f64,
     output_ptr: *mut f64,
@@ -104,6 +105,7 @@ pub extern "C" fn rust_single_whittaker(
     d: i64,
 ) {
     single_whittaker(
+        x_input_ptr,
         y_input_ptr,
         weights_input_ptr,
         output_ptr,
