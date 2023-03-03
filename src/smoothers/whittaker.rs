@@ -74,7 +74,7 @@ pub fn multiple_whittakers(
             let slice_length = y_input_slice.len();
             let e: CsMat<f64> = CsMat::eye(slice_length);
 
-            let diff_mat = diff(&e, d);
+            let diff_mat = dif_no_ddmat(&e, d);
 
             let diags = (0..slice_length).collect::<Vec<usize>>();
 
@@ -119,6 +119,7 @@ pub fn multiple_whittakers(
 }
 
 pub fn single_whittaker(
+    x_input_ptr: *mut f64,
     y_input_ptr: *mut f64,
     weights_input_ptr: *mut f64,
     output_ptr: *mut f64,
@@ -126,6 +127,11 @@ pub fn single_whittaker(
     lambda: f64,
     d: i64,
 ) {
+    let x_input: &mut [f64] = unsafe {
+        assert!(!x_input_ptr.is_null());
+        std::slice::from_raw_parts_mut(x_input_ptr, data_length)
+    };
+
     let y_input: &mut [f64] = unsafe {
         assert!(!y_input_ptr.is_null());
         std::slice::from_raw_parts_mut(y_input_ptr, data_length)
@@ -141,9 +147,7 @@ pub fn single_whittaker(
         std::slice::from_raw_parts_mut(output_ptr, data_length)
     };
 
-    let e: CsMat<f64> = CsMat::eye(data_length as usize);
-
-    let diff_mat = diff(&e, d);
+    let diff_mat = ddmat(&x_input.to_vec(), data_length, d as usize);
 
     let diags = (0..data_length).collect::<Vec<usize>>();
     let weights_matrix = TriMatBase::from_triplets(
@@ -176,12 +180,38 @@ pub fn single_whittaker(
     }
 }
 
-fn diff(e: &CsMat<f64>, d: i64) -> CsMat<f64> {
+fn ddmat(x: &Vec<f64>, size: usize, d: usize) -> CsMat<f64> {
+    if d == 0 {
+        return CsMat::eye(size);
+    } else {
+        let dx = x.windows(d + 1).map(|t| 1_f64 / (t[d] - t[0])).collect();
+
+        let ind: Vec<usize> = (0..(size - d)).collect();
+        let v: CsMat<f64> = TriMatBase::from_triplets(
+            (size - d, size - d),
+            ind.clone(),
+            ind,
+            dx,
+        )
+        .to_csr();
+
+        let d = &v * &diff(&ddmat(x, size, d - 1));
+
+        return d;
+    }
+}
+
+fn diff(e: &CsMat<f64>) -> CsMat<f64> {
+    let e1 = e.slice_outer(0..e.rows() - 1);
+    let e2 = e.slice_outer(1..e.rows());
+    return &e2 - &e1;
+}
+fn dif_no_ddmat(e: &CsMat<f64>, d: i64) -> CsMat<f64> {
     if d == 0 {
         return e.clone();
     } else {
         let e1 = e.slice_outer(0..e.rows() - 1);
         let e2 = e.slice_outer(1..e.rows());
-        return diff(&(&e2 - &e1), d - 1);
+        return dif_no_ddmat(&(&e2 - &e1), d - 1);
     }
 }

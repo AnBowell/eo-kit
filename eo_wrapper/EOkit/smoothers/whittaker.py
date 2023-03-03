@@ -16,15 +16,18 @@ from cffi import FFI
 ffi = FFI()
 
 
-def single_whittaker(y_input, weights_input, lambda_, d):
+def single_whittaker(x_input, y_input, weights_input, lambda_, d):
     """Run a single Whittaker smoother on 1D data.
 
     The Whittaker smoother is based on penalized least squares. The main paper
     is behind a pay-wall, though the supporting information is available and
     contains extra details about the implementation of this algorithm [1].
 
+    The single function is able to take variably spaced data (through x_input).
+
     Parameters
     ----------
+    x_input : ndarray of type float, size (N)
     y_input : ndarray of type float, size (N)
         The inputs that are to be smoothed.
     weights_input : ndarray of type float, size (N)
@@ -48,7 +51,7 @@ def single_whittaker(y_input, weights_input, lambda_, d):
     >>> vci = (np.sin(np.arange(0, data_len, 1., dtype=float))
     >>>           + np.random.standard_normal(data_len) * 2))
     >>> weights = np.full(vci.size, 1.0, dtype=np.float64)
-    >>> rust_smoothed_data = whittaker.single_whittaker(vci, weights, 5, 3)
+    >>> rust_smoothed_data = whittaker.single_whittaker(np.arange(0, data_len, 1., dtype=float), vci, weights, 5, 3)
 
     References
     ----------
@@ -62,17 +65,20 @@ def single_whittaker(y_input, weights_input, lambda_, d):
     result = np.empty(data_len, dtype=np.float64)
     result = check_contig(result)
 
+    x_input = check_contig(x_input)
     y_input = check_contig(y_input)
     weights_input = check_contig(weights_input)
 
     y_input = check_type(y_input)
     weights_input = check_type(weights_input)
 
+    x_input_ptr = ffi.cast("double *", x_input.ctypes.data)
     y_input_ptr = ffi.cast("double *", y_input.ctypes.data)
     weights_input_ptr = ffi.cast("double *", weights_input.ctypes.data)
     result_ptr = ffi.cast("double *", result.ctypes.data)
 
     lib.rust_single_whittaker(
+        x_input_ptr,
         y_input_ptr,
         weights_input_ptr,
         result_ptr,
