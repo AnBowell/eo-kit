@@ -64,7 +64,7 @@ def main():
     rust_start = perf_counter()
 
     weights = np.full(vci.size, 1.0, dtype=np.float64)
-    rust_smoothed_data = whittaker.single_whittaker(days, vci, weights, 5, 3)
+    rust_smoothed_data = whittaker.single_whittaker(days, vci, weights, 50, 2)
 
     rust_end = perf_counter()
     print("Rust whittaker done. This took {}s".format(rust_end - rust_start))

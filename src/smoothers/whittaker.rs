@@ -147,19 +147,21 @@ pub fn single_whittaker(
         std::slice::from_raw_parts_mut(output_ptr, data_length)
     };
 
+    let e: CsMat<f64> = CsMat::eye(data_length);
     let diff_mat = ddmat(&x_input.to_vec(), data_length, d as usize);
 
-    let diags = (0..data_length).collect::<Vec<usize>>();
-    let weights_matrix = TriMatBase::from_triplets(
-        (data_length, data_length),
-        diags.clone(),
-        diags,
-        weights.to_vec(),
-    )
-    .to_csc();
+    // let diags = (0..data_length).collect::<Vec<usize>>();
 
-    let to_solve: CsMat<f64> = &weights_matrix
-        + &(&(&diff_mat.transpose_view() * &diff_mat) * lambda);
+    // let weights_matrix = TriMatBase::from_triplets(
+    //     (data_length, data_length),
+    //     diags.clone(),
+    //     diags,
+    //     weights.to_vec(),
+    // )
+    // .to_csc();
+
+    let to_solve: CsMat<f64> =
+        &e + &(&(&diff_mat.transpose_view() * &diff_mat) * lambda);
 
     let ldl = Ldl::new()
         .fill_in_reduction(ReverseCuthillMcKee)
@@ -167,13 +169,13 @@ pub fn single_whittaker(
         .numeric(to_solve.view())
         .expect("Could not create solver.");
 
-    let smoothed_y = ldl.solve(
-        weights
-            .iter()
-            .zip(y_input)
-            .map(|(a, b)| *a * *b)
-            .collect::<Vec<f64>>(),
-    );
+    let smoothed_y = ldl.solve(y_input);
+    //     weights
+    //         .iter()
+    //         .zip(y_input)
+    //         .map(|(a, b)| *a * *b)
+    //         .collect::<Vec<f64>>(),
+    // );
 
     for i in 0..data_length {
         output[i] = smoothed_y[i]

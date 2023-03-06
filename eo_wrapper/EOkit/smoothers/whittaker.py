@@ -69,6 +69,7 @@ def single_whittaker(x_input, y_input, weights_input, lambda_, d):
     y_input = check_contig(y_input)
     weights_input = check_contig(weights_input)
 
+    x_input = check_contig(x_input)
     y_input = check_type(y_input)
     weights_input = check_type(weights_input)
 
