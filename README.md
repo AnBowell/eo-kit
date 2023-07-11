@@ -5,3 +5,5 @@ EOkit is aiming to be a useful Python library which uses Rust behind the scenes 
 This package can be installed from PyPI here: https://pypi.org/project/eo-kit/ 
 
 The (very basic) documentation can be found here: https://eo-kit.readthedocs.io/en/latest/ 
+
+For more tools visit https://www.anbowell.com
